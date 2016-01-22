@@ -29,6 +29,14 @@ public class TwitchChat {
 		return null;
 	}
 	
+	public List<String> getExtra() {
+		if(isActive()) {
+			return chatHook.getExtra();
+		}
+		
+		return null;
+	}
+	
 	public static final class IRCMsg {
 		public final String source, command;
 		public final String data;
@@ -223,6 +231,7 @@ public class TwitchChat {
 	}
 	
 	private static final class ChatHook extends Thread {
+		private List<String> extra = new LinkedList<>();
 		private List<String> msgs = new LinkedList<>();
 		private boolean ignoreMessages = false;
 		
@@ -249,6 +258,17 @@ public class TwitchChat {
 			synchronized (msgs) {
 				ret = new LinkedList<>(msgs);
 				msgs.clear();
+			}
+			
+			return ret;
+		}
+		
+		
+		public List<String> getExtra() {
+			List<String> ret;
+			synchronized (extra) {
+				ret = new LinkedList<>(extra);
+				extra.clear();
 			}
 			
 			return ret;
@@ -289,8 +309,14 @@ public class TwitchChat {
 						
 						if("PRIVMSG".equalsIgnoreCase(recv.command)) {
 							if(recv.data != null && recv.data.length() > 4 && recv.data.startsWith("!fw ")) {
-								synchronized (msgs) {
+								synchronized(msgs) {
 									msgs.add(recv.data.substring(4));
+								}
+							}
+							
+							if(recv.data != null && recv.data.length() > 8 && recv.data.startsWith("!summon ")) {
+								synchronized(extra) {
+									extra.add(recv.data.substring(8));
 								}
 							}
 							

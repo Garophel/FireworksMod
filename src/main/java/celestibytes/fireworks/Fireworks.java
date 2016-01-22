@@ -4,6 +4,7 @@ import celestibytes.fireworks.twitch.TwitchChat;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -36,5 +37,10 @@ public class Fireworks {
     	} else {
     		System.out.println("Firework command register FAILED!!! - " + (cmgr != null ? cmgr.getClass().getCanonicalName() : "NULL!!!"));
     	}
+    }
+    
+    @EventHandler
+    public void init(FMLInitializationEvent e) {
+    	MinecraftForge.EVENT_BUS.register(new WorldTickHandler());
     }
 }
